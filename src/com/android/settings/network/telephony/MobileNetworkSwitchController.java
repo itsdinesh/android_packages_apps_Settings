@@ -87,15 +87,27 @@ public class MobileNetworkSwitchController extends BasePreferenceController impl
         mSwitchBar = (SettingsMainSwitchPreference) screen.findPreference(mPreferenceKey);
 
         mSwitchBar.setOnBeforeCheckedChangeListener((isChecked) -> {
-            // TODO b/135222940: re-evaluate whether to use
-            // mSubscriptionManager#isSubscriptionEnabled
-            if (mSubscriptionManager.isActiveSubscriptionId(mSubId) != isChecked) {
+            if (isSimEnabled() != isChecked) {
                 SubscriptionUtil.startToggleSubscriptionDialogActivity(mContext, mSubId, isChecked);
                 return true;
             }
             return false;
         });
         update();
+    }
+
+    private boolean isSimEnabled() {
+        SubscriptionInfo subInfo = null;
+        for (SubscriptionInfo info : SubscriptionUtil.getAvailableSubscriptions(mContext)) {
+            if (info.getSubscriptionId() == mSubId) {
+                subInfo = info;
+                break;
+            }
+        }
+        if (subInfo != null) {
+            return subInfo.areUiccApplicationsEnabled();
+        }
+        return mSubscriptionManager.isSubscriptionEnabled(mSubId);
     }
 
     private void update() {
@@ -118,7 +130,7 @@ public class MobileNetworkSwitchController extends BasePreferenceController impl
             mSwitchBar.hide();
         } else {
             mSwitchBar.show();
-            mSwitchBar.setCheckedInternal(mSubscriptionManager.isActiveSubscriptionId(mSubId));
+            mSwitchBar.setCheckedInternal(isSimEnabled());
         }
     }
 

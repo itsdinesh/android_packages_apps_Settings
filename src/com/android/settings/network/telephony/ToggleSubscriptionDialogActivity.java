@@ -225,6 +225,12 @@ public class ToggleSubscriptionDialogActivity extends SubscriptionActionDialogAc
                             removedSubInfo);
                     return;
                 }
+                if (SubscriptionUtil.showToggleForPhysicalSim(mSubscriptionManager)) {
+                    handleTogglePsimAction();
+                    dismissProgressDialog();
+                    finish();
+                    return;
+                }
                 mSwitchToRemovableSlotSidecar.run(UiccSlotUtil.INVALID_PHYSICAL_SLOT_ID,
                         removedSubInfo);
                 break;
@@ -328,11 +334,8 @@ public class ToggleSubscriptionDialogActivity extends SubscriptionActionDialogAc
             showEnableDsdsConfirmDialog();
             return;
         }
-        if (!mIsEsimOperation && mTelMgr.isMultiSimEnabled()
-                && isRemovableSimEnabled()) {
-            // This case is for switching on psim when device is not multiple enable profile
-            // supported.
-            Log.i(TAG, "Toggle on pSIM, no dialog displayed.");
+        if (!mIsEsimOperation && SubscriptionUtil.showToggleForPhysicalSim(mSubscriptionManager)) {
+            Log.i(TAG, "Toggle on pSIM directly via handleTogglePsimAction.");
             handleTogglePsimAction();
             finish();
             return;

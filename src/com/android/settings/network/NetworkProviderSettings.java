@@ -1261,7 +1261,10 @@ public class NetworkProviderSettings extends RestrictedSettingsFragment
     @VisibleForTesting
     void changeNextButtonState(boolean enabled) {
         if (mEnableNextOnConnection && hasNextButton()) {
-            getNextButton().setEnabled(enabled);
+            Button nextButton = getNextButton();
+            if (nextButton != null) {
+                nextButton.setEnabled(enabled);
+            }
         }
     }
 

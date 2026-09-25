@@ -693,11 +693,19 @@ public abstract class SettingsPreferenceFragment extends InstrumentedPreferenceF
     }
 
     protected boolean hasNextButton() {
-        return ((ButtonBarHandler) getActivity()).hasNextButton();
+        Activity activity = getActivity();
+        if (activity instanceof ButtonBarHandler) {
+            return ((ButtonBarHandler) activity).hasNextButton();
+        }
+        return false;
     }
 
     protected Button getNextButton() {
-        return ((ButtonBarHandler) getActivity()).getNextButton();
+        Activity activity = getActivity();
+        if (activity instanceof ButtonBarHandler) {
+            return ((ButtonBarHandler) activity).getNextButton();
+        }
+        return null;
     }
 
     public void finish() {
